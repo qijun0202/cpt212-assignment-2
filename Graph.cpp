@@ -9,7 +9,7 @@ class Graph
 	private:
   		bool** adjMatrix;    // Indicates if there is an edge exist between two cities.
  		int numVertices,     // Stores the number of cities.
-		 	distance[5][5];  // Stores the distance from a city to the other city.
+		 	distance[5][5] = {{0,343,8730,16961,9715},{343,0,8402,16994,9562},{8730,8402,0,12434,8897},{16961,16994,12434,0,7826},{9715,9562,8897,7826,0}};  // Stores the distance from a city to the other city.
 
    	public:
    		
@@ -26,10 +26,9 @@ class Graph
   	}
 
 	// Add edges
-  	void addEdge(int i, int j, int weight)
+  	void addEdge(int i, int j)
 	{
     	adjMatrix[i][j] = true;
-    	distance[i][j] = weight;
   	}
 
   	// Remove edges
@@ -56,7 +55,12 @@ class Graph
 		{
 			cout << i << " : ";
 		  	for (int j = 0; j < numVertices; j++)
-		    	cout << adjMatrix[i][j] << " ";
+		  	{
+		  		if ( adjMatrix[i][j] == false)
+		    		cout << adjMatrix[i][j] << "\t";
+		    	else
+		    		cout << distance[i][j] << "\t";
+		    }
 		  	cout << endl;
 		}
 	}
@@ -72,21 +76,11 @@ class Graph
 	  	
 	  	// Add the edges and their corresponding distance/weight to the adjacency matrix.
 	  	int PA=0, LO=1, LV=2, SY=3, TO=4;		
-		addEdge(PA, TO, 9715);
-		addEdge(PA, LO, 343);
-		addEdge(TO, SY, 7826);
-		addEdge(LV, SY, 12434);
-		addEdge(LV, LO, 8402);
-		
-		// In the adjacency matrix, if the edge is not present, then it will be infinity. For same node, it will be 0.
-		for (int i = 0; i < numVertices; i++)
-		{
-			for (int j = 0; j < numVertices; j++)
-			{
-				if (adjMatrix[i][j] == false)
-					adjMatrix[i][j] = numeric_limits<int>::infinity();
-			}
-	  	}
+		addEdge(PA, TO);
+		addEdge(PA, LO);
+		addEdge(TO, SY);
+		addEdge(LV, SY);
+		addEdge(LV, LO);
 	}
 
   	~Graph()
@@ -101,16 +95,41 @@ int main()
 {
 	// Initialize a directed and weighted graph when this program starts up.
 	Graph g(5);
+	int choice = 0;
 
 	g.toString();
 	
-	// Display the distance
-	cout << endl;
-	for (int i = 0; i < 5; i++)
+	while ( choice != 6)
 	{
-		for (int j = 0; j < 5; j++)
-			cout << g.getDistance(i, j) << "\t";
-		cout << endl;	
+		cout<<"\nPlease choose one function to proceed:\n"
+			<<"(1) Check strongly connected\n"
+			<<"(2) Check cycle\n"
+			<<"(3) Check shortest path between two cities\n"
+			<<"(4) Compute minimum spanning tree\n"
+			<<"(5) Reset the graph\n"
+			<<"(6) End the program\n"
+			<<"Choice : ";
+		cin>>choice;
+		
+		switch(choice)
+		{
+			case 1:
+				break;
+			case 2:
+				break;
+			case 3:
+				break;
+			case 4:
+				break;
+			case 5:
+				g.resetGraph();
+				g.toString();
+				break;
+			default:
+				if(choice == 6)
+					cout<<"Thank you for using this program.";
+				break;
+		}
 	}
 	
 	return 0;
