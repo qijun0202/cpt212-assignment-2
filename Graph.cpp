@@ -173,6 +173,7 @@ int main()
 				break;
 			case 6:
 				enterRemoveEdge(g);
+				g.toString();
 				break;
 			default:
 				if(choice == 7)
