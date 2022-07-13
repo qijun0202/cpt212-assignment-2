@@ -89,12 +89,12 @@ class Graph
 	void randomEdge()
 {
 	srand((unsigned) time(0));
-	int a=rand(), b=rand();
+	int a=rand()%5, b=rand()%5;
 	
-	while(a<0 || a>4 || b<0 || b>4 || a==b || adjMatrix[a][b]==true)
+	while(a==b || adjMatrix[a][b]==true)
 	{
-		a=rand();
-		b=rand();
+		a=rand()%5;
+		b=rand()%5;
 	}
 
 	addEdge(a,b);
