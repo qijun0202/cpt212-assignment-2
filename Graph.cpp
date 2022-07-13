@@ -109,7 +109,7 @@ class Graph
   	
 };
 
-void enterRemoveEdge(Graph g)
+void enterRemoveEdge(Graph &g)
 {
 	int x, y;
 	
