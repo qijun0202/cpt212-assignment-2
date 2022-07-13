@@ -111,35 +111,50 @@ class Graph
   	
 };
 
+void selectTwoCities(int &x, int &y)
+{	
+	cout << "Starting city   : ";
+	cin >> x;
+	cout << "Destination city: ";
+	cin >> y;
+	
+	if (x == 0 || y == 0)	//Finish function if x or y equal to 0.
+	{
+		return;
+	}
+	else if (x == y)  // Print the error message if the 2 city numbers are the same.
+	{
+		cout << "\n******************************* ERROR! *******************************" << endl
+			 << "The starting and destination city number entered must be different!!!"    << endl
+			 << "**********************************************************************\n" << endl;
+	}
+	else if (x < 1 || x > 5 || y < 1 || y > 5 )  // Print the error message if the input is incorrect.
+	{
+		cout << "\n*********************** ERROR! ***********************" << endl
+			 << "The city number entered should be between 1 and 5!!!"     << endl
+			 << "******************************************************\n" << endl;
+	}
+}
+
 void enterRemoveEdge(Graph &g)
 {
 	int x, y;
 	
 	// Ask users to enter the starting and destination city of directed edge they want to remove.
-	cout << "\nPA: 1, LO: 2, LV: 3, SY: 4, TO: 5" << endl
+	cout << "\nPA: 1, LO: 2, LV: 3, SY: 4, TO: 5, Cancel: 0" << endl
 		 << "Enter the starting and destination city of directed edge you want to remove:" << endl;
 	
 	// Prompt user to input starting and destination city using respective number.
 	do
 	{
-		cout << "Starting city   : ";
-		cin >> x;
-		cout << "Destination city: ";
-		cin >> y;
+		selectTwoCities(x,y);
 		
-		if (x < 1 || x > 5 || y < 1 || y > 5)  // Print the error message if the input is incorrect.
+		//Finish function if x or y equal to 0.
+		if(x == 0 || y == 0)
 		{
-			cout << "\n*********************** ERROR! ***********************" << endl
-				 << "The city number entered should be between 1 and 5!!!"     << endl
-				 << "******************************************************\n" << endl;
+			return;
 		}
-		else if (x == y)  // Print the error message if the 2 city numbers are the same.
-		{
-			cout << "\n******************************* ERROR! *******************************" << endl
-				 << "The starting and destination city number entered must be different!!!"    << endl
-				 << "**********************************************************************\n" << endl;
-		}
-		else if (!g.areAdjacent(x-1, y-1))  // Print the error message if the directed edge is not exist.
+		else if (!g.areAdjacent(x-1, y-1) && x != y )  // Print the error message if the directed edge is not exist.
 		{
 			cout << "\n************* ERROR! *************" << endl
 				 << "The directed edge is not exist!!!"    << endl
@@ -150,6 +165,68 @@ void enterRemoveEdge(Graph &g)
 	// Remove the edge by calling the function removeEdge().
 	g.removeEdge(x-1, y-1);
 	cout << "The edge is removed successfully." << endl;
+}
+
+//Find the minimum distance value from cities that have not included in shortest path tree.
+int minDistance(int dist[], bool read[])
+{
+	int u, min = INT_MAX, min_index;
+	for (u = 0; u < 5; u++)
+	{
+		//Find minimum distance from source, and set the corresponding index number.
+		if (dist[u] <= min && read[u] == false)
+		{
+			min = dist[u];
+			min_index = u;
+		}
+	}
+	
+	return min_index;
+}
+
+//Dijsktra algorithm to find short path for two city.
+void Dijsktra(Graph &g)
+{
+	int x, y, u;
+	int dist[5];
+	bool read[5];
+	
+
+	
+	cout << "\nPA: 1, LO: 2, LV: 3, SY: 4, TO: 5, Cancel: 0" << endl
+		 << "Enter the starting and destination city of directed edge you want to remove:" << endl;
+		 
+	do
+	{
+		selectTwoCities(x, y);
+	}while (x < 1 || x > 5 || y < 1 || y > 5 || x == y);
+	
+
+	
+	for(dist[y-1] = INT_MAX; dist[y-1] == INT_MAX; g.randomEdge())
+	{
+	for (int i = 0; i < 5; i++)
+	{
+	dist[i] = INT_MAX;
+	read[i] = false;
+	}
+		
+	dist[x-1] = 0;
+		
+	for(int k = 0; k < 4; k++)
+	{
+		u = minDistance(dist, read);
+		
+		read[u] = true;
+
+		for (int v = 0; v < 5; v++)
+		{
+			if (!read[v] && g.areAdjacent(u, v) && dist[u] != INT_MAX && dist[u]+g.getDistance(u,v) < dist[v])
+				dist[v] = dist[u] + g.getDistance(u,v);
+		}
+	}
+	}
+	cout<<endl<<dist[y-1]<<endl;
 }
 
 
@@ -183,6 +260,7 @@ int main()
 			case 2:
 				break;
 			case 3:
+				Dijsktra(g);
 				break;
 			case 4:
 				break;
