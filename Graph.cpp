@@ -171,65 +171,119 @@ void enterRemoveEdge(Graph &g)
 int minDistance(int dist[], bool read[])
 {
 	int u, min = INT_MAX, min_index;
+	
+	//For all cities, find minimum distance from source, and set the corresponding index number.
 	for (u = 0; u < 5; u++)
 	{
-		//Find minimum distance from source, and set the corresponding index number.
 		if (dist[u] <= min && read[u] == false)
 		{
 			min = dist[u];
 			min_index = u;
 		}
-	}
+	}	
 	
 	return min_index;
+}
+
+//Print the corresponded city name for each vertice.
+void printCity(int i)
+{
+	switch(i)
+	{
+		case 0:
+			cout<<"Paris";
+			break;
+		case 1:
+			cout<<"London";
+			break;
+		case 2:
+			cout<<"Las Vegas";
+			break;
+		case 3:
+			cout<<"Sydney";
+			break;
+		case 4:
+			cout<<"Tokyo";
+	}
+}
+
+//Print shortest path from source to i using parent array.
+void printPath(Graph &g, int parent[],int i)
+{
+	//The city is the source city.
+	if (parent[i] == -1)
+	{
+		cout<<endl;
+		printCity(i);
+		cout<<endl<<endl;
+		return;
+	}
+	
+	//Repeat the function to print parent's parent city.
+	printPath(g, parent, parent[i]);
+	
+	//Print the name and distance from the previous city.
+	printCity(i);
+	cout<<" ("<<g.getDistance(parent[i],i)<<")\n\n";
 }
 
 //Dijsktra algorithm to find short path for two city.
 void Dijsktra(Graph &g)
 {
 	int x, y, u;
-	int dist[5];
+	int dist[5], parent[5];
 	bool read[5];
 	
-
-	
+	//Print instructions.
 	cout << "\nPA: 1, LO: 2, LV: 3, SY: 4, TO: 5, Cancel: 0" << endl
 		 << "Enter the starting and destination city of directed edge you want to remove:" << endl;
-		 
+	
+	//Let user select two available cities that are not repeated.	 
 	do
 	{
 		selectTwoCities(x, y);
 	}while (x < 1 || x > 5 || y < 1 || y > 5 || x == y);
 	
 
-	
+	//Repeat the loop if there is no path to arrive destination city.
 	for(dist[y-1] = INT_MAX; dist[y-1] == INT_MAX; g.randomEdge())
 	{
-	for (int i = 0; i < 5; i++)
-	{
-	dist[i] = INT_MAX;
-	read[i] = false;
-	}
-		
-	dist[x-1] = 0;
-		
-	for(int k = 0; k < 4; k++)
-	{
-		u = minDistance(dist, read);
-		
-		read[u] = true;
-
-		for (int v = 0; v < 5; v++)
+		//Reset all array in the function.
+		for (int i = 0; i < 5; i++)	
 		{
-			if (!read[v] && g.areAdjacent(u, v) && dist[u] != INT_MAX && dist[u]+g.getDistance(u,v) < dist[v])
-				dist[v] = dist[u] + g.getDistance(u,v);
+		parent[i] = -1;
+		dist[i] = INT_MAX;
+		read[i] = false;
+		}
+		
+		//The distance of source city to itself is 0.
+		dist[x-1] = 0;
+		
+		for(int k = 0; k < 4; k++)
+		{
+			//Pick the minimum distance city from the source city.
+			u = minDistance(dist, read);
+			
+			//Mark the city as processed.
+			read[u] = true;
+			
+			//Update the city minimum distance and parent when the other cities is not yet processed and has an edge between u and v while
+			//the total distance from source city to v through u is smaller than current value dist[v].
+			for (int v = 0; v < 5; v++)
+			{
+				if (!read[v] && g.areAdjacent(u, v) && dist[u] != INT_MAX && dist[u]+g.getDistance(u,v) < dist[v])
+				{
+					parent[v] = u;
+					dist[v] = dist[u] + g.getDistance(u,v);
+				}
+			}
 		}
 	}
-	}
-	cout<<endl<<dist[y-1]<<endl;
+	
+	//Print the shortest distance and the shortest path graph.
+	cout<<endl<<"Shortest Distance : "<<dist[y-1]<<endl;
+	printPath(g, parent, y-1);
 }
-
-
 
 int main()
 {
@@ -279,7 +333,6 @@ int main()
 				break;
 		}
 	}
-
+	
 	return 0;
 }
-
