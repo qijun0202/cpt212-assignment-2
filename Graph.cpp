@@ -91,7 +91,7 @@ class Graph
 	srand((unsigned) time(0));
 	int a=rand(), b=rand();
 	
-	while(a<0 || a>4 || b<0 || b>4 || a==b)
+	while(a<0 || a>4 || b<0 || b>4 || a==b || adjMatrix[a][b]==true)
 	{
 		a=rand();
 		b=rand();
