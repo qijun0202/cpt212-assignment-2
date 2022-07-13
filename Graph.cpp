@@ -1,5 +1,5 @@
 // Adjacency Matrix representation in C++
-
+#include<ctime>
 #include <iostream>
 using namespace std;
 
@@ -85,13 +85,28 @@ class Graph
 		addEdge(LV, SY);
 		addEdge(LV, LO);
 	}
+	
+	void randomEdge()
+{
+	srand((unsigned) time(0));
+	int a=rand(), b=rand();
+	
+	while(a<0 || a>4 || b<0 || b>4 || a==b)
+	{
+		a=rand();
+		b=rand();
+	}
 
+	addEdge(a,b);
+}
+	
   	~Graph()
 	{
     	for (int i = 0; i < numVertices; i++)
       		delete[] adjMatrix[i];
     	delete[] adjMatrix;
   	}
+  	
 };
 
 void enterRemoveEdge(Graph g)
@@ -135,17 +150,18 @@ void enterRemoveEdge(Graph g)
 	cout << "The edge is removed successfully." << endl;
 }
 
+
+
 int main()
 {
 	// Initialize a directed and weighted graph g when this program starts up.
 	Graph g(5);
 	int choice = 0;
 
-	g.toString();
-	
 	// Print the menu of the program. 
-	while (choice != 7)
+	while (choice != 8)
 	{
+		g.toString();
 		cout << "\nPlease choose one function to proceed:\n"
 			 << "(1) Check strongly connected\n"
 			 << "(2) Check cycle\n"
@@ -153,9 +169,10 @@ int main()
 			 << "(4) Compute minimum spanning tree\n"
 			 << "(5) Reset the graph\n"
 			 << "(6) Remove the edge\n" 
-			 << "(7) End the program\n"
+			 << "(7) Random edge\n"
 			 << "Choice : ";
 		cin >> choice;
+		cout<< endl;
 		
 		switch(choice)
 		{
@@ -169,14 +186,15 @@ int main()
 				break;
 			case 5:
 				g.resetGraph();
-				g.toString();
 				break;
 			case 6:
 				enterRemoveEdge(g);
-				g.toString();
+				break;
+			case 7:
+				g.randomEdge();
 				break;
 			default:
-				if(choice == 7)
+				if(choice == 8)
 					cout << "\nThank you for using this program.";
 				break;
 		}
