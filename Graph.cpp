@@ -54,15 +54,17 @@ class Graph
 
 	// Print the martix
 	void toString() {
+		string place[] = {"Paris\t\t","London\t\t","LasVegas\t","Sydney\t\t","Tokyo\t\t"};
+		cout << "Name\t\t: " << place[0] << place[1] << place[2] << place[3] << place[4] << endl;
 		for (int i = 0; i < numVertices; i++)
 		{
-			cout << i << " : ";
+			cout << place[i] << ": ";
 		  	for (int j = 0; j < numVertices; j++)
 		  	{
 		  		if ( adjMatrix[i][j] == false)
-		    		cout << adjMatrix[i][j] << "\t";
+		    		cout << adjMatrix[i][j] << "\t\t";
 		    	else
-		    		cout << distance[i][j] << "\t";
+		    		cout << distance[i][j] << "\t\t";
 		    }
 		  	cout << endl;
 		}
