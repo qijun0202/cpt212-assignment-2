@@ -1,8 +1,10 @@
 // Adjacency Matrix representation in C++
-#include<ctime>
+#include <ctime>
 #include <iostream>
 #include <cstdlib>
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
+#include <list>
+#include <stack>
 using namespace std;
 
 class Graph
@@ -40,7 +42,7 @@ class Graph
   	void addEdge(int i, int j)
 	{
     	adjMatrix[i][j] = true;
-    	adj[i].push_back(j); // Add w to v¡¯s list.
+    	adj[i].push_back(j); // Add w to v's list.
   	}
 
   	// Remove edges
@@ -61,7 +63,7 @@ class Graph
 	  	return distance[i][j];
 	}
 
-	// Print the martix
+	// Print the matrix
 	void toString() {
 		string place[] = {"Paris\t\t","London\t\t","LasVegas\t","Sydney\t\t","Tokyo\t\t"};
 		cout << "Name\t\t: " << place[0] << place[1] << place[2] << place[3] << place[4] << endl;
@@ -156,6 +158,75 @@ class Graph
     	return false;
 	}
   
+	// A recursive function to print DFS starting from v
+	void DFSUtil(int v, bool visited[])
+	{
+		// Mark the current node as visited and print it
+    	visited[v] = true;
+ 
+    	// Recur for all the vertices adjacent to this vertex
+    	list<int>::iterator y;
+    	for (y = adj[v].begin(); y != adj[v].end(); ++y)
+    	    if (!visited[*y])
+    	        DFSUtil(*y, visited);
+	}
+	
+	// Function that returns reverse (or transpose) of this graph
+	Graph getTranspose()
+	{
+	    Graph gTrans(numVertices);
+    	for (int v = 0; v < numVertices; v++)
+    	{
+       		// Recur for all the vertices adjacent to this vertex
+        	list<int>::iterator z;
+        	for(z = adj[v].begin(); z != adj[v].end(); ++z)
+        	{
+        	    gTrans.adj[*z].push_back(v);
+        	}
+    	}
+    	return gTrans;
+	}
+	
+	// The main function that returns true if graph
+	// is strongly connected
+	bool isStrongConnected()
+	{
+	    // Step 1: Mark all the vertices as not visited
+	    // (For first DFS)
+	    bool visited[numVertices];
+	    for (int i = 0; i < numVertices; i++)
+	        visited[i] = false;
+	 
+	    // Step 2: Do DFS traversal starting from first vertex.
+	    DFSUtil(0, visited);
+	 
+	     // If DFS traversal doesn't visit all vertices,
+	     // then return false.
+	    for (int i = 0; i < numVertices; i++)
+	        if (visited[i] == false)
+	             return false;
+	 
+	    // Step 3: Create a reversed graph
+	    Graph gReversed = getTranspose();
+	 
+	    // Step 4: Mark all the vertices as not visited
+	    // (For second DFS)
+	    for(int i = 0; i < numVertices; i++)
+	        visited[i] = false;
+	 
+	    // Step 5: Do DFS for reversed graph starting from
+	    // first vertex. Starting Vertex must be same starting
+	    // point of first DFS
+	    gReversed.DFSUtil(0, visited);
+	 
+	    // If all vertices are not visited in second DFS, then
+	    // return false
+	    for (int i = 0; i < numVertices; i++)
+	        if (visited[i] == false)
+	             return false;
+	 
+	    return true;
+	}
 	
   	~Graph()
 	{
@@ -196,8 +267,10 @@ void enterRemoveEdge(Graph &g)
 	int x, y;
 	
 	// Ask users to enter the starting and destination city of directed edge they want to remove.
-	cout << "\nPA: 1, LO: 2, LV: 3, SY: 4, TO: 5, Cancel: 0" << endl
-		 << "Enter the starting and destination city of directed edge you want to remove:" << endl;
+	cout << "*******************************************************************************************\n";
+	cout << "PA: 1, LO: 2, LV: 3, SY: 4, TO: 5, Cancel: 0" << endl;
+	cout << "Enter the starting and destination city of directed edge you want to remove:" << endl;
+	cout << "*******************************************************************************************\n";
 	
 	// Prompt user to input starting and destination city using respective number.
 	do
@@ -219,7 +292,10 @@ void enterRemoveEdge(Graph &g)
 	
 	// Remove the edge by calling the function removeEdge().
 	g.removeEdge(x-1, y-1);
+	cout << endl;
+	cout << "*******************************************************************************************\n";
 	cout << "The edge is removed successfully." << endl;
+	cout << "*******************************************************************************************\n";
 }
 
 //Find the minimum distance value from cities that have not included in shortest path tree.
@@ -259,6 +335,7 @@ void printCity(int i)
 			break;
 		case 4:
 			cout<<"Tokyo";
+			break;
 	}
 }
 
@@ -268,9 +345,9 @@ void printPath(Graph &g, int parent[],int i)
 	//The city is the source city.
 	if (parent[i] == -1)
 	{
-		cout<<endl;
+		cout << endl;
+		cout << "Path: ";
 		printCity(i);
-		cout<<endl<<endl;
 		return;
 	}
 	
@@ -278,8 +355,9 @@ void printPath(Graph &g, int parent[],int i)
 	printPath(g, parent, parent[i]);
 	
 	//Print the name and distance from the previous city.
+	cout << " --> ";
 	printCity(i);
-	cout<<" ("<<g.getDistance(parent[i],i)<<")\n\n";
+	cout<<" ("<<g.getDistance(parent[i],i)<<")";
 }
 
 //Dijsktra algorithm to find short path for two city.
@@ -290,8 +368,10 @@ void Dijsktra(Graph &g)
 	bool read[5];
 	
 	//Print instructions.
-	cout << "\nPA: 1, LO: 2, LV: 3, SY: 4, TO: 5, Cancel: 0" << endl
-		 << "Enter the starting and destination city of directed edge you want to remove:" << endl;
+	cout << "*******************************************************************************************\n";
+	cout << "PA: 1, LO: 2, LV: 3, SY: 4, TO: 5, Cancel: 0" << endl;
+	cout << "Enter the starting and destination city of directed edge you want to remove:" << endl;
+	cout << "*******************************************************************************************\n";
 	
 	//Let user select two available cities that are not repeated.	 
 	do
@@ -340,7 +420,36 @@ void Dijsktra(Graph &g)
 	printPath(g, parent, y-1);
 }
 
-
+void printSC(int choice)
+{
+	switch(choice)
+	{
+		case 1:
+			cout << endl << endl;
+			cout << "*******************************************************************************************\n";
+			cout << "Original graph is strongly connected!" << endl;
+			cout << "*******************************************************************************************\n";
+			break;
+		case 2:
+			cout << endl << endl;
+			cout << "*******************************************************************************************\n";
+			cout << "Original graph is NOT strongly connected!" << endl;
+			cout << "*******************************************************************************************\n";	
+			break;
+		case 3:
+			cout << endl << endl;
+			cout << "*******************************************************************************************\n";
+			cout << "Modified graph is strongly connected!" << endl;
+			cout << "*******************************************************************************************\n";
+			break;
+		case 4:
+			cout << endl << endl;
+			cout << "*******************************************************************************************\n";
+			cout << "Modified graph is still NOT strongly connected!" << endl;
+			cout << "*******************************************************************************************\n";	
+			break;
+	}
+}
 
 int main()
 {
@@ -348,10 +457,10 @@ int main()
 	Graph g(5);
 	g.resetGraph(); 
 	int choice = 0;
-	bool cycle;
+	bool cycle, strong;
 
 	// Print the menu of the program. 
-	while (choice != 8)
+	do
 	{
 		g.toString();
 		cout << "\nPlease choose one function to proceed:\n"
@@ -362,6 +471,7 @@ int main()
 			 << "(5) Reset the graph\n"
 			 << "(6) Remove the edge\n" 
 			 << "(7) Random edge\n"
+			 << "(8) End the program\n"
 			 << "Choice : ";
 		cin >> choice;
 		cout<< endl;
@@ -369,6 +479,40 @@ int main()
 		switch(choice)
 		{
 			case 1:
+				//To store boolean value of strong connected graph
+				strong = g.isStrongConnected();
+				
+				if(strong == true)
+				{
+					printSC(1);
+				}
+				else if(strong == false)
+				{
+					printSC(2);
+					while(strong == false)
+					{
+						//Auto generate random edge until the graph is strongly connected
+						g.randomEdge();
+						cout << "After a random edge is generated:" << endl;
+   						cout << "Modified Graph:" << endl;
+   						cout << "*******************************************************************************************\n";
+						//Print modified graph after a random edge is generated
+						g.toString();
+						cout << "*******************************************************************************************\n";
+						//Check whether modified graph is strongly connected
+						strong = g.isStrongConnected();
+						if(strong == true)
+						{
+							printSC(3);
+						}
+						else if(strong == false)
+						{
+							printSC(4);
+						}	
+					}
+				}
+				system("pause");
+				system("cls");
 				break;
 			case 2:
 				cycle=g.isCyclic();
@@ -377,6 +521,7 @@ int main()
 				{
 					cout << "*******************************************************************************************\n";
         			cout << "Original graph contains cycle\n";
+        			cout << "*******************************************************************************************\n";
 				}
 				
    				else
@@ -386,8 +531,8 @@ int main()
    					while(cycle==false)
    					{
    						g.randomEdge();
-   						cout << "After random edge is added:\n";
-   						cout << "New Graph:\n";
+   						cout << "After a random edge is generated:\n";
+   						cout << "Modified Graph:\n";
    						cout << "*******************************************************************************************\n";
 						g.toString();
 						cout << "*******************************************************************************************\n";
@@ -396,21 +541,32 @@ int main()
         					cout << "Graph contains cycle\n\n";
    						else
    							cout << "Graph still doesn't contain cycle\n\n";
-					}
-					system("pause");
-					system("cls");			
+					}		
 				}
-        			
+				system("pause");
+				system("cls");	        			
 				break;
 			case 3:
+				system("cls");
 				Dijsktra(g);
+				cout << endl << endl;
+				system("pause");
+				system("cls");
 				break;
 			case 4:
+				system("cls");
+				//kg add here
 				break;
 			case 5:
+				system("cls");
 				g.resetGraph();
+				cout << endl;
+				cout << "*******************************************************************************************\n";
+				cout << "The graph has been reset" << endl;
+				cout << "*******************************************************************************************\n";
 				break;
 			case 6:
+				system("cls");
 				enterRemoveEdge(g);
 				break;
 			case 7:
@@ -418,10 +574,13 @@ int main()
 				break;
 			default:
 				if(choice == 8)
-					cout << "\nThank you for using this program.";
+					cout << endl;
+					cout << "*******************************************************************************************\n";
+					cout << "Thank you for using this program." << endl;
+					cout << "*******************************************************************************************\n";
 				break;
 		}
-	}
+	} while (choice != 8);
 	
 	return 0;
 }
