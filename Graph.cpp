@@ -1,10 +1,13 @@
 // Adjacency Matrix representation in C++
 #include<ctime>
 #include <iostream>
+#include <cstdlib>
+#include<bits/stdc++.h>
 using namespace std;
 
 class Graph
 {
+	list<int> *adj;    // Pointer to an array containing adjacency lists
 	private:
   		bool** adjMatrix;    // Indicates if there is an edge exist between two cities.
  		int numVertices,     // Stores the number of cities.
@@ -21,6 +24,7 @@ class Graph
 	{
   		this->numVertices = numVertices;
     	adjMatrix = new bool*[numVertices];
+    	adj = new list<int>[numVertices];
     	
     	for (int i = 0; i < numVertices; i++)
       		adjMatrix[i] = new bool[numVertices];
@@ -32,6 +36,7 @@ class Graph
   	void addEdge(int i, int j)
 	{
     	adjMatrix[i][j] = true;
+    	adj[i].push_back(j); // Add w to v¡¯s list.
   	}
 
   	// Remove edges
@@ -89,18 +94,64 @@ class Graph
 	}
 	
 	void randomEdge()
-{
-	srand((unsigned) time(0));
-	int a=rand()%5, b=rand()%5;
-	
-	while(a==b || adjMatrix[a][b]==true)
 	{
-		a=rand()%5;
-		b=rand()%5;
-	}
+		srand((unsigned) time(0));
+		int a=rand()%5, b=rand()%5;
+	
+		while(a==b || adjMatrix[a][b]==true)
+		{
+			a=rand()%5;
+			b=rand()%5;
+		}
 
-	addEdge(a,b);
-}
+		addEdge(a,b);
+	}
+	
+	
+	bool isCyclicUtil(int v, bool visited[], bool *recStack)
+	{
+    	if(visited[v] == false)
+    	{
+    	    // Mark the current node as visited and part of recursion stack
+    	    visited[v] = true;
+    	    recStack[v] = true;
+  	
+  	    	// Recur for all the vertices adjacent to this vertex
+  	    	list<int>::iterator i;
+  	    	for(i = adj[v].begin(); i != adj[v].end(); ++i)
+   			{
+            	if ( !visited[*i] && isCyclicUtil(*i, visited, recStack) )
+                	return true;
+            	else if (recStack[*i])
+                	return true;
+        	}
+  
+    	}
+    	recStack[v] = false;  // remove the vertex from recursion stack
+    	return false;
+	}
+	
+	bool isCyclic()
+	{
+   		// Mark all the vertices as not visited and not part of recursion
+    	// stack
+    	bool *visited = new bool[numVertices];
+    	bool *recStack = new bool[numVertices];
+    	for(int i = 0; i < numVertices; i++)
+    	{
+    	    visited[i] = false;
+    	    recStack[i] = false;
+    	}
+  
+    	// Call the recursive helper function to detect cycle in different
+    	// DFS trees
+    	for(int i = 0; i < numVertices; i++)
+    	    if ( !visited[i] && isCyclicUtil(i, visited, recStack))
+    	        return true;
+  
+    	return false;
+	}
+  
 	
   	~Graph()
 	{
@@ -285,11 +336,14 @@ void Dijsktra(Graph &g)
 	printPath(g, parent, y-1);
 }
 
+
+
 int main()
 {
 	// Initialize a directed and weighted graph g when this program starts up.
 	Graph g(5);
 	int choice = 0;
+	bool cycle;
 
 	// Print the menu of the program. 
 	while (choice != 8)
@@ -312,6 +366,36 @@ int main()
 			case 1:
 				break;
 			case 2:
+				cycle=g.isCyclic();
+				
+				if(cycle==true)
+				{
+					cout << "*******************************************************************************************\n";
+        			cout << "Original graph contains cycle\n";
+				}
+				
+   				else
+   				{
+   					cout << "*******************************************************************************************\n";
+   					cout << "Original graph doesn't contain cycle\n";
+   					while(cycle==false)
+   					{
+   						g.randomEdge();
+   						cout << "After random edge is added:\n";
+   						cout << "New Graph:\n";
+   						cout << "*******************************************************************************************\n";
+						g.toString();
+						cout << "*******************************************************************************************\n";
+   						cycle=g.isCyclic();
+   						if(cycle==true)
+        					cout << "Graph contains cycle\n\n";
+   						else
+   							cout << "Graph still doesn't contain cycle\n\n";
+					}
+					system("pause");
+					system("cls");			
+				}
+        			
 				break;
 			case 3:
 				Dijsktra(g);
