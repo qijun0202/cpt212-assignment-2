@@ -29,7 +29,11 @@ class Graph
     	for (int i = 0; i < numVertices; i++)
       		adjMatrix[i] = new bool[numVertices];
       		
-    	resetGraph();
+    	for (int i = 0; i < numVertices; i++)
+		{
+			for (int j = 0; j < numVertices; j++)
+				adjMatrix[i][j] = false;
+	  	}
   	}
 
 	// Add edges
@@ -342,6 +346,7 @@ int main()
 {
 	// Initialize a directed and weighted graph g when this program starts up.
 	Graph g(5);
+	g.resetGraph(); 
 	int choice = 0;
 	bool cycle;
 
