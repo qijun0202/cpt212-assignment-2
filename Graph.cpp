@@ -89,7 +89,7 @@ class Graph
 			for (int j = 0; j < numVertices; j++)
 				adjMatrix[i][j] = false;
 	  	}
-	  	
+	  	adj = new list<int>[numVertices];
 	  	// Add the edges and their corresponding distance/weight to the adjacency matrix.
 	  	int PA=0, LO=1, LV=2, SY=3, TO=4;		
 		addEdge(PA, TO);
