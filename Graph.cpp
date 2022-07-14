@@ -468,19 +468,19 @@ bool areIdentical(ListNode *cluster_uNode, ListNode *cluster_vNode)
 		return false;
 }
 
-void MergeCluster(LinkedList &cluster_u, LinkedList &cluster_v)
+void MergeCluster(int u, int v, LinkedList *cluster)
 {
-	int arrClust_u[cluster_u.getNumNodes()];
-	int arrClust_v[cluster_v.getNumNodes()];
+	int arrClust_u[cluster[u].getNumNodes()];
+	int arrClust_v[cluster[v].getNumNodes()];
 	
-	int mergeSize = cluster_u.getNumNodes() + cluster_v.getNumNodes();
+	int mergeSize = cluster[u].getNumNodes() + cluster[v].getNumNodes(); // The number of vertices in the merged list.
 	int arrMerge[mergeSize];
 	
 	LinkedList mergeCluster;
 	
 	// Convert both linked list clusters into array arrClust_u & arrClust_v.
-	cluster_u.convertArray(arrClust_u, cluster_u.getNumNodes());
-	cluster_v.convertArray(arrClust_v, cluster_v.getNumNodes());
+	cluster[u].convertArray(arrClust_u, cluster[u].getNumNodes());
+	cluster[v].convertArray(arrClust_v, cluster[v].getNumNodes());
 	
 	// Merge both cluster array into one merged linked list.
 	for(int vertex : arrClust_u)
@@ -488,18 +488,16 @@ void MergeCluster(LinkedList &cluster_u, LinkedList &cluster_v)
 	for(int vertex : arrClust_v)
 		mergeCluster.insertNode(vertex);
 	
-	// Clear both cluster linked list.
-	cluster_u.~LinkedList();
-	cluster_v.~LinkedList();
-	
 	mergeCluster.convertArray(arrMerge, mergeSize);  // Convert merged linked list into array arrMerge.
 	
-	// Let both clusters have the same merge list.
-	for(int i = 0; i < mergeSize; i++)
-	{
-		cluster_u.insertNode(arrMerge[i]);
-		cluster_v.insertNode(arrMerge[i]);
-	}
+	// Clear all the initial clusters' linked list.
+	for (int i = 0; i < mergeSize; i++)
+		cluster[arrMerge[i]].clearList();
+	
+	// Let all initial clusters that merged together have the same list.
+	for (int i = 0; i < mergeSize; i++)
+		for(int j = 0; j < mergeSize; j++)
+			cluster[arrMerge[i]].insertNode(arrMerge[j]);
 }
 
 void enterChosenEdges_MST(Graph &g, int &num, int *start, int *dest)
@@ -513,17 +511,13 @@ void enterChosenEdges_MST(Graph &g, int &num, int *start, int *dest)
 		cout << "Enter the number of edges you want to include in MST: ";
 		cin >> num;
 		
-		if (num > g.getNumOfEdge())  // Print the error message if the number of edges entered is exceed the number of edges in the graph.
+		if (num > g.getNumOfEdge()-1)  // Print the error message if the number of edges entered is exceed the number of edges in the graph.
 		{
-			cout << "\n****************** ERROR! ******************"                  << endl
-				 << "There is only " << g.getNumOfEdge() << " edges in the graphs!!!" << endl
-				 << "********************************************\n"                  << endl;
+			cout << "\n********************* ERROR! *********************"                         << endl
+				 << "The maximum number of edges chosen should be " << g.getNumOfEdge()-1 << "!!!" << endl
+				 << "**************************************************\n"                         << endl;
 		}
-	} while (num > g.getNumOfEdge());
-	
-	// Store the list of chosen starting and destination cities/vertices.
-	start = new int[num];
-	dest = new int[num];
+	} while (num > g.getNumOfEdge()-1);
 	
 	for (int i = 0; i < num; i++)
 	{
@@ -541,7 +535,7 @@ void enterChosenEdges_MST(Graph &g, int &num, int *start, int *dest)
 					 << "The directed edge is not exist!!!"    << endl
 					 << "**********************************\n" << endl;
 			}
-		} while (x < 1 || x > 5 || y < 1 || y > 5 || x == y || !g.areAdjacent(x-1, y-1));
+		} while (x < 1 || x > 5 || y < 1 || y > 5 || x == y);
 		
 		// Store the chosen starting and destination cities/vertice in the list.
 		start[i] = x;
@@ -551,7 +545,9 @@ void enterChosenEdges_MST(Graph &g, int &num, int *start, int *dest)
 
 void MST_Kruskal(Graph &g)
 {
-	int numChosenEdges, *chosenStartVertex, *chosenDestVertex;
+	int numChosenEdges,         // To store the number of edges that choose by user.
+		chosenStartVertex[5],
+		chosenDestVertex[5];
 	
 	// Ask the user to enter their chosen edges to compute the MST.
 	enterChosenEdges_MST(g, numChosenEdges, chosenStartVertex, chosenDestVertex);
@@ -568,13 +564,12 @@ void MST_Kruskal(Graph &g)
 	// Add the chosen edges in the new graph.
 	for (int i = 0; i < numChosenEdges; i++)
 	{
-		int x = chosenStartVertex[i];
-		int y = chosenDestVertex[i];
-		MST.addEdge(x, y);   // Add the edge to the new graph.
-		MergeCluster(cluster[x], cluster[y]);  // Merge both clusters.
+		int x = chosenStartVertex[i] - 1;
+		int y = chosenDestVertex[i] - 1;
+		MST.addEdge(x, y);   // Add the edge to the new graph.		
+		MergeCluster(x, y, cluster);  // Merge both clusters.
 		g.removeEdge(x, y);  // Remove the edge.
 	}
-	numCluster -= numChosenEdges;
 	
 	LinkedList sorted_WeightList;  // Create a linked list to store the weighted directed edges in ascending order.
 	
@@ -594,22 +589,28 @@ void MST_Kruskal(Graph &g)
 		if(!areIdentical(cluster[i].head, cluster[j].head))
 		{
 			MST.addEdge(i, j);   // Add the edge to the new graph.
-			MergeCluster(cluster[i], cluster[j]);  // Merge both clusters.
+			MergeCluster(i, j, cluster);  // Merge both clusters.
 		}
 	}
 	
+	cout << endl;
 	MST.toString();  // Display the result in the farm of adjacency matrix.
-	//if ()
 	
-	cout << endl << endl;
+	cout << "\n*******************************************************************************************\n"
+		 << "Computing MST program ends.\n"
+		 << "*******************************************************************************************\n"
+		 << endl;
+		 
 	sorted_WeightList.~LinkedList();  // Clear the weight list at the end of function.
+	for (int i = 0; i < g.getNumVertices(); i++)
+		cluster[i].~LinkedList();     // Clear the cluster list at the end of function.
 }
 
 int main()
 {
 	// Initialize a directed and weighted graph g when this program starts up.
 	Graph g(5);
-	g.resetGraph(); 
+	g.resetGraph();
 	int choice = 0;
 	bool cycle, strong;
 

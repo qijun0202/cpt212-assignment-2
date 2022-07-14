@@ -34,8 +34,8 @@ class LinkedList
 		void insertNode(int);             // to insert node (for storing cluster member).
 		void insertNode(int, int, int);   // to insert node (arrange weight in ascending order).
 		void removeMin(int&, int&, int&); // to remove and return the minimum node.
-		void displayList() const;         // display the linked list.
 		void convertArray(int[], int);    // put every vertex in the cluster into the array.
+		void clearList();
 		int getHeadVertex()               // return the value in head node of cluster list.
 			{ return head->vertex; }
 		int getNumNodes();                // return the number of nodes in the list.
@@ -145,18 +145,6 @@ void LinkedList::removeMin(int &weight, int &start, int &dest)
 	head = nodePtr;
 }
 
-void LinkedList::displayList() const
-{
-	ListNode *nodePtr; // To traverse the list.
-	nodePtr = head;
-	
-	while(nodePtr != NULL)
-	{
-		cout << nodePtr->weight << "," << nodePtr->start << "," << nodePtr->dest << "\t";
-		nodePtr = nodePtr->next;
-	}
-}
-
 void LinkedList::convertArray(int arr[], int num)
 {
 	ListNode *nodePtr; // To traverse the list.
@@ -184,6 +172,29 @@ int LinkedList::getNumNodes()
 	return num;
 }
 
+void LinkedList::clearList()
+{
+	ListNode *nodePtr;    // To traverse the list.
+	ListNode *nextNode;   // To point to the next node.
+	
+	// Position nodePtr at the head of the list.
+	nodePtr = head;
+	
+	// While nodePtr is not at the end of the list.
+	while(nodePtr != NULL)
+	{
+		// Save a pointer to the next node.
+		nextNode = nodePtr->next;
+		
+		// Delete the current node.
+		delete nodePtr;
+		
+		// Position nodePtr at the next node.
+		nodePtr = nextNode;
+	}
+	head = NULL;
+}
+
 LinkedList::~LinkedList()
 {
 	ListNode *nodePtr;    // To traverse the list.
@@ -204,4 +215,5 @@ LinkedList::~LinkedList()
 		// Position nodePtr at the next node.
 		nodePtr = nextNode;
 	}
+	head = NULL;
 }
