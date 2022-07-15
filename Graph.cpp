@@ -625,8 +625,7 @@ int main()
 			 << "(4) Compute minimum spanning tree\n"
 			 << "(5) Reset the graph\n"
 			 << "(6) Remove the edge\n" 
-			 << "(7) Random edge\n"
-			 << "(8) End the program\n"
+			 << "(7) End the program\n"
 			 << "Choice : ";
 		cin >> choice;
 		cout<< endl;
@@ -724,18 +723,15 @@ int main()
 				system("cls");
 				enterRemoveEdge(g);
 				break;
-			case 7:
-				g.randomEdge();
-				break;
 			default:
-				if(choice == 8)
+				if(choice == 7)
 					cout << endl;
 					cout << "*******************************************************************************************\n";
 					cout << "Thank you for using this program." << endl;
 					cout << "*******************************************************************************************\n";
 				break;
 		}
-	} while (choice != 8);
+	} while (choice != 7);
 	
 	return 0;
 }
