@@ -1,0 +1,14 @@
+Programming Language: C++
+
+Instructions
+1. Run the executable application or run the program using any suitable C++ compiler or IDE.
+2. The initial graph(adjacency matrix) and the menu of the program will be shown in the console.
+3. Enter the number that assigned to every single different function and press 'Enter' to run the selected function. 
+4. Every selected function will run and stop after the function has done to allow user to review the result.
+5. Press any button to continue or exit the current function.
+6. The program menu and modified graph by previous function will be displayed once again after the user press any button.
+7. Enter "7" to exit the program.
+
+Thank you for using our program, Dr. 
+Hope that our program UI able to provide you a clear idea of how to run our program. 
+Have a nice day.
