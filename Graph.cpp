@@ -554,9 +554,9 @@ bool isMST(Graph &MST, LinkedList *cluster)
 
 void MST_Kruskal(Graph &g)
 {
-	int numChosenEdges,         // To store the number of edges that choose by user.
-		chosenStartVertex[5],
-		chosenDestVertex[5];
+	int numChosenEdges,         // Store the number of edges that choose by user.
+		chosenStartVertex[5],   // Store the starting vertex of edges chosen by user.
+		chosenDestVertex[5];    // Store the destination vertex of edges chosen by user.
 	int	counter; 
 	bool repeat = false;
 	bool travel[g.getNumVertices()];
@@ -567,7 +567,11 @@ void MST_Kruskal(Graph &g)
 	do
 	{
 		repeat = false;
-		Graph m(g.getNumVertices()),n(g.getNumVertices());
+		
+		Graph m(g.getNumVertices()), // Create a new graph object m to store original graph temporarily.
+			  n(g.getNumVertices()); // Create a new graph object n to make an undirected graph from the original directed graph.
+		
+		
 		for(int i = 0; i < g.getNumVertices();i++)
 		{
 			travel[i] = false;
@@ -581,31 +585,21 @@ void MST_Kruskal(Graph &g)
 			}
 		}
 		
-		for(int i = 0; i < g.getNumVertices();i++)
-		{
+		for(int i = 0; i < g.getNumVertices(); i++)
 			for(int j = 0; j < g.getNumVertices(); j++)
-			{
-				if(n.areAdjacent(i, j)&&!m.areAdjacent(i,j))
-				{
-					m.addEdge(i,j);
-				}
-			}
-		}
+				if(n.areAdjacent(i, j) && !m.areAdjacent(i,j))
+					m.addEdge(i, j);
 		
-		//Test whenether one vertice can reach all other vertice
+		// Test whether one vertex can reach all other vertices.
 		m.DFSUtil(0,travel);
 		
-		for(int w = 0; w < g.getNumVertices();w++)
-		{
-			if(travel[w]==false)
-				repeat=true;
-		}
+		for(int w = 0; w < g.getNumVertices(); w++)
+			if(travel[w] == false)
+				repeat = true;
 		
-		if(repeat==true)
-		{
+		if(repeat == true)
 			g.randomEdge();
-		}
-	}while(repeat);
+	} while(repeat);
 	
 	// Initialize the cluster, each vertex starts in its own cluster.
 	int numCluster = g.getNumVertices();   // Store the number of clusters.
