@@ -105,6 +105,7 @@ class Graph
 		addEdge(LV, LO);
 	}
 	
+	// Generate a random edge between two vertices (cities)
 	void randomEdge()
 	{
 		srand((unsigned) time(0));
@@ -230,10 +231,12 @@ class Graph
 	    for (int i = 0; i < numVertices; i++)
 	        if (visited[i] == false)
 	             return false;
-	 
-	    return true;
+	    
+	    // return true if the graph is strongly connected
+	    return true; 
 	}
 	
+	//Destructor of class Graph, delete the adjacency matrix
   	~Graph()
 	{
     	for (int i = 0; i < numVertices; i++)
@@ -243,6 +246,7 @@ class Graph
   	
 };
 
+//To prompt user to enter 2 cities using the number assigned to each city
 void selectTwoCities(int &x, int &y)
 {	
 	cout << "Starting city   : ";
@@ -268,6 +272,7 @@ void selectTwoCities(int &x, int &y)
 	}
 }
 
+//To prompt user to select the edge to be removed
 void enterRemoveEdge(Graph &g)
 {
 	int x, y;
@@ -426,6 +431,7 @@ void Dijsktra(Graph &g)
 	printPath(g, parent, y-1);
 }
 
+// To preset the messages to be displayed for the result of strongly connected graph detection
 void printSC(int choice)
 {
 	switch(choice)
@@ -733,10 +739,12 @@ int main()
    					cout << "Original graph doesn't contain cycle\n";
    					while(cycle==false)
    					{
-   						g.randomEdge();
+   						//Auto generate random edge until the graph is strongly connected
+						g.randomEdge();
    						cout << "After a random edge is generated:\n";
    						cout << "Modified Graph:\n";
    						cout << "*******************************************************************************************\n";
+						//Print modified graph after a random edge is generated
 						g.toString();
 						cout << "*******************************************************************************************\n";
    						cycle=g.isCyclic();
@@ -759,6 +767,8 @@ int main()
 			case 4:
 				system("cls");
 				MST_Kruskal(g);
+				system("pause");
+				system("cls");
 				break;
 			case 5:
 				system("cls");
@@ -771,6 +781,8 @@ int main()
 			case 6:
 				system("cls");
 				enterRemoveEdge(g);
+				system("pause");
+				system("cls");
 				break;
 			default:
 				if(choice == 7)
