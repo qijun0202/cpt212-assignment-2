@@ -535,7 +535,7 @@ void enterChosenEdges_MST(Graph &g, int &num, int *start, int *dest)
 					 << "The directed edge is not exist!!!"    << endl
 					 << "**********************************\n" << endl;
 			}
-		} while (x < 1 || x > 5 || y < 1 || y > 5 || x == y);
+		} while (x < 1 || x > 5 || y < 1 || y > 5 || x == y||!g.areAdjacent(x-1, y-1));
 		
 		// Store the chosen starting and destination cities/vertice in the list.
 		start[i] = x;
@@ -543,7 +543,7 @@ void enterChosenEdges_MST(Graph &g, int &num, int *start, int *dest)
 	}
 }
 
-bool isMST(Graph &g, Graph &MST, LinkedList *cluster)
+bool isMST(Graph &MST, LinkedList *cluster)
 {
 	// If there is an initial cluster do not have 5 nodes inside their list, then no MST is formed.
 	for (int i = 0; i < MST.getNumVertices(); i++)
@@ -557,6 +557,12 @@ void MST_Kruskal(Graph &g)
 	int numChosenEdges,         // To store the number of edges that choose by user.
 		chosenStartVertex[5],
 		chosenDestVertex[5];
+	bool repeat = false;
+	
+	while(g.getNumOfEdge() < g.getNumVertices()-1)
+	{
+		g.randomEdge();
+	}
 	
 	// Ask the user to enter their chosen edges to compute the MST.
 	enterChosenEdges_MST(g, numChosenEdges, chosenStartVertex, chosenDestVertex);
@@ -564,6 +570,11 @@ void MST_Kruskal(Graph &g)
 	// Initialize the cluster, each vertex starts in its own cluster.
 	int numCluster = g.getNumVertices();   // Store the number of clusters.
 	LinkedList cluster[numCluster];
+	
+	LinkedList sorted_WeightList;  // Create a linked list to store the weighted directed edges in ascending order.
+	
+	do
+	{
 	for (int i = 0; i < numCluster; i++)
 		cluster[i].insertNode(i);
 	
@@ -577,17 +588,12 @@ void MST_Kruskal(Graph &g)
 		int y = chosenDestVertex[i] - 1;
 		MST.addEdge(x, y);   // Add the edge to the new graph.		
 		MergeCluster(x, y, cluster);  // Merge both clusters.
-		g.removeEdge(x, y);  // Remove the edge.
 	}
 	
-	LinkedList sorted_WeightList;  // Create a linked list to store the weighted directed edges in ascending order.
-	
-	do
-	{
 		// Arrange the weighted directed edges in ascending order.
 		for (int i = 0; i < g.getNumVertices(); i++)
 			for (int j = 0; j < g.getNumVertices(); j++)
-				if (g.areAdjacent(i, j))
+				if (g.areAdjacent(i, j) && (i != chosenStartVertex[i]-1 && j != chosenDestVertex[j]-1))
 					sorted_WeightList.insertNode(g.getDistance(i,j), i, j);
 		
 		// If the number of edges in new graph is less than n-1 edges, for which n is the number of vertices.
@@ -609,13 +615,22 @@ void MST_Kruskal(Graph &g)
 	
 		// Check if the new graph formed is a MST by checking whether each initial cluster have contain 5 nodes inside their list.
 		// If there is no MST formed, then generate random edge in the new graph until the MST is formed.
-		if(!isMST(g, MST, cluster))
+		if(!isMST(MST, cluster))
 		{
 			cout << "This not MST." << endl
 				 << "\nRandom edge is generated..." << endl;
 			g.randomEdge();
+			MST.~Graph();
+			sorted_WeightList.clearList();
+			for( int z = 0; z < g.getNumVertices(); z++)
+			{
+				cluster[z].clearList();
+			}
+			repeat = true;
 		}
-	} while (!isMST(g, MST, cluster));
+		else
+			repeat = false;
+	} while (repeat);
 	
 	cout << "MST is generated!" << endl;
 	cout << "*******************************************************************************************\n"
