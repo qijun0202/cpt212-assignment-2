@@ -543,6 +543,15 @@ void enterChosenEdges_MST(Graph &g, int &num, int *start, int *dest)
 	}
 }
 
+bool isMST(Graph &g, Graph &MST, LinkedList *cluster)
+{
+	// If there is an initial cluster do not have 5 nodes inside their list, then no MST is formed.
+	for (int i = 0; i < MST.getNumVertices(); i++)
+		if(cluster[i].getNumNodes() != MST.getNumVertices())
+			return false;
+	return true;
+}
+
 void MST_Kruskal(Graph &g)
 {
 	int numChosenEdges,         // To store the number of edges that choose by user.
@@ -573,33 +582,45 @@ void MST_Kruskal(Graph &g)
 	
 	LinkedList sorted_WeightList;  // Create a linked list to store the weighted directed edges in ascending order.
 	
-	// Arrange the weighted directed edges in ascending order.
-	for (int i = 0; i < g.getNumVertices(); i++)
-		for (int j = 0; j < g.getNumVertices(); j++)
-			if (g.areAdjacent(i, j))
-				sorted_WeightList.insertNode(g.getDistance(i,j), i, j);
-	
-	// If the number of edges in new graph is less than n-1 edges, for which n is the number of vertices.
-	while(MST.getNumOfEdge() < MST.getNumVertices() - 1)
+	do
 	{
-		int weight = 0, i = 0, j = 0;
-		sorted_WeightList.removeMin(weight, i, j);  // Remove the minimum weight from the list. 
+		// Arrange the weighted directed edges in ascending order.
+		for (int i = 0; i < g.getNumVertices(); i++)
+			for (int j = 0; j < g.getNumVertices(); j++)
+				if (g.areAdjacent(i, j))
+					sorted_WeightList.insertNode(g.getDistance(i,j), i, j);
 		
-		// If both clusters are not the same, add the edge to the new graph and merge both clusters.
-		if(!areIdentical(cluster[i].head, cluster[j].head))
+		// If the number of edges in new graph is less than n-1 edges, for which n is the number of vertices.
+		while(MST.getNumOfEdge() < MST.getNumVertices() - 1)
 		{
-			MST.addEdge(i, j);   // Add the edge to the new graph.
-			MergeCluster(i, j, cluster);  // Merge both clusters.
+			int weight = 0, i = 0, j = 0;
+			sorted_WeightList.removeMin(weight, i, j);  // Remove the minimum weight from the list. 
+			
+			// If both clusters are not the same, add the edge to the new graph and merge both clusters.
+			if(!areIdentical(cluster[i].head, cluster[j].head))
+			{
+				MST.addEdge(i, j);   // Add the edge to the new graph.
+				MergeCluster(i, j, cluster);  // Merge both clusters.
+			}
 		}
-	}
+		
+		cout << endl;
+		MST.toString();  // Display the result in the farm of adjacency matrix.
 	
-	cout << endl;
-	MST.toString();  // Display the result in the farm of adjacency matrix.
+		// Check if the new graph formed is a MST by checking whether each initial cluster have contain 5 nodes inside their list.
+		// If there is no MST formed, then generate random edge in the new graph until the MST is formed.
+		if(!isMST(g, MST, cluster))
+		{
+			cout << "This not MST." << endl
+				 << "\nRandom edge is generated..." << endl;
+			g.randomEdge();
+		}
+	} while (!isMST(g, MST, cluster));
 	
-	cout << "\n*******************************************************************************************\n"
+	cout << "MST is generated!" << endl;
+	cout << "*******************************************************************************************\n"
 		 << "Computing MST program ends.\n"
-		 << "*******************************************************************************************\n"
-		 << endl;
+		 << "*******************************************************************************************\n" << endl;
 		 
 	sorted_WeightList.~LinkedList();  // Clear the weight list at the end of function.
 	for (int i = 0; i < g.getNumVertices(); i++)
